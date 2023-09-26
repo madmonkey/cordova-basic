@@ -37,10 +37,8 @@ export const canActivate = (route: ActivatedRouteSnapshot,
       return true;
     }
     else {
-
       // Stores the attempted URL for redirecting.
       authService.setRedirectUrl(state.url);
-
       // Not signed in so redirects to signin page.
       security.authorize()
       return false;
