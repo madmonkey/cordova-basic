@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
 
 @NgModule({
   imports: [
@@ -28,9 +28,19 @@ export class AuthConfigModule {
   scope: string = 'openid profile email';
   authority: string = 'http://10.0.2.2:44330/connect/authorize';
   redirectUrl: string = "app-dci://oidc-callback";
+  token_url: string ='http://10.0.2.2:44330/connect/token';
+  secret: string ='';
 
   requestParameters = ()=>{
     return `client_id=${encodeURIComponent(this.client_id)}&response_type=${encodeURIComponent(this.response_type)}&scope=${encodeURIComponent(this.scope)}&redirect_uri=${encodeURIComponent(this.redirectUrl)}`;
+  }
+  requestBody =(code: string)=> {
+    return {
+    client_id: `${encodeURIComponent(this.client_id)}`,
+    client_secret: `--redacted--`,
+    redirect_uri: `${encodeURIComponent(this.redirectUrl)}`,
+    grant_type: `authorization_code`
+  };
   }
   formattedUrl =()=>{
     return `${this.authority}?${this.requestParameters()}`;

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthConfigModule} from "./auth/auth-config.module";
+import {HttpClient} from "@angular/common/http";
 
 function _window(): any {
   // return the global native browser window object
@@ -14,21 +15,41 @@ export class AuthService {
   private hasStorage: boolean;
   private loggedIn: boolean = false;
   private instance: any = _window();
+  private static client: HttpClient;
   constructor(private authConfigModule: AuthConfigModule) {
     this.hasStorage = typeof Storage !== 'undefined';
+    //this.client = client;
     this.instance.addEventListener('message', (event: { data: string; }) => {
+      console.log('event listener - hit');
+      console.table(event);
       if (event.data.match(/^oauth::/)) {
         var data = JSON.parse(event.data.substring(7));
         console.table(event.data);
-        console.table(data);
+
         // Use data.code
       }
     });
-    this.instance.handleOpenURL = function(url: string | URL) {
-      console.log(">>>>>>>>>>>>>>>>>>>");
-      // do stuff, for example
-      // document.getElementById("url").value = url;
-      console.log(url);
+    this.instance.addEventListener('code', (event:any) => {
+      console.table(event);
+    });
+    this.instance.handleOpenURL = async (url: string) => {
+        console.log(">>>>>>>>>>>>>>>>>>>");
+        console.log(url);
+        const urlParameters = new URLSearchParams(url);
+        /* extremely problematic to launch a post request this way */
+        const code = urlParameters.get('code');
+        if (code) {
+          // this.instance.document.dispatchEvent("code",{code: code})
+          /*
+              client.post(authConfigModule.token_url, authConfigModule.requestBody).subscribe(response => {
+              console.log('token::post');
+              console.table(response);
+
+
+              //this.instance.ev
+            })
+           */
+        }
     };
   }
   get cordova(): any {
