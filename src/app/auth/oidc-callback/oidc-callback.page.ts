@@ -7,9 +7,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OidcCallbackPage implements OnInit {
 
-  constructor() { }
+  constructor() {
+
+  }
 
   ngOnInit() {
+    /*
+    window.addEventListener('message', (event) => {
+      if (event.data.match(/^oauth::/)) {
+        var data = JSON.parse(event.data.substring(7));
+        console.table(event.data);
+        console.table(data);
+        // Use data.code
+      }
+  });
+
+     */
   }
 
 }

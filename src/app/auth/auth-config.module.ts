@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
-import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
 
 @NgModule({
   imports: [
+    /*
     AuthModule.forRoot({
       config: {
         authority: 'http://10.0.2.2:44330',
@@ -16,9 +16,25 @@ import { AuthModule, LogLevel } from 'angular-auth-oidc-client';
         renewTimeBeforeTokenExpiresInSeconds: 30,
         logLevel: LogLevel.Debug,
 
-      },
-    }),
+
+     */
+
   ],
-  exports: [AuthModule],
+  // exports: [AuthModule],
 })
-export class AuthConfigModule {}
+export class AuthConfigModule {
+  client_id: string = 'mobile_web';
+  response_type = 'code';
+  scope: string = 'openid profile email';
+  authority: string = 'http://10.0.2.2:44330/connect/authorize';
+  redirectUrl: string = "app-dci://oidc-callback";
+
+  requestParameters = ()=>{
+    return `client_id=${encodeURIComponent(this.client_id)}&response_type=${encodeURIComponent(this.response_type)}&scope=${encodeURIComponent(this.scope)}&redirect_uri=${encodeURIComponent(this.redirectUrl)}`;
+  }
+  formattedUrl =()=>{
+    return `${this.authority}?${this.requestParameters()}`;
+  }
+}
+
+

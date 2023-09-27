@@ -6,7 +6,7 @@ import {
   CanActivateFn
 } from '@angular/router';
 import {catchError, map, Observable, of} from 'rxjs';
-import {LoginResponse, OidcSecurityService} from "angular-auth-oidc-client";
+
 import {AuthService} from "../auth.service";
 
 @Injectable({
@@ -14,22 +14,24 @@ import {AuthService} from "../auth.service";
 })
 
 export class AuthGuardService {
-  authInfo$: Observable<LoginResponse> | undefined;
 
-  constructor(private router: Router,
-              private authService: AuthService,
-              private zone: NgZone) {
+
+  constructor(private authService: AuthService) {
   }
 
-  login() {
-    console.log('login');
-    this.authService.doLogin();
-  }
+
 }
 export const canActivate = (route: ActivatedRouteSnapshot,
                             state: RouterStateSnapshot) => {
-  //const authService = inject(AuthService);
-  // const router = inject(Router);
+  const authService = inject(AuthService);
+  if(authService.isLoggedIn){
+    return true;
+  }
+  else {
+    authService.doLogin();
+    return false;
+  }
+ /*
   const security = inject(OidcSecurityService);
   const authService = inject(AuthService);
   console.table(security);
@@ -43,4 +45,7 @@ export const canActivate = (route: ActivatedRouteSnapshot,
       security.authorize()
       return false;
     }
+
+  */
+
 }

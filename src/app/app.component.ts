@@ -1,4 +1,4 @@
-import {Component, NgZone, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AuthService} from "./auth.service";
 
 @Component({
@@ -7,7 +7,7 @@ import {AuthService} from "./auth.service";
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  constructor(private authService: AuthService, private zone: NgZone) {}
+  constructor(private authService: AuthService) {}
   ngOnInit() {
     this.checkAuth();
   }
@@ -20,11 +20,8 @@ export class AppComponent implements OnInit {
     this.authService.doLogin();
   }
   checkAuth(url?: string) {
-
-    (window as any).handleOpenURL = (url: string) => {
-      this.zone.run(() => {
-        this.authService.checkAuth(url);
-      });
-    };
+  if(!this.authService.isLoggedIn){
+    this.login();
+  }
   }
 }

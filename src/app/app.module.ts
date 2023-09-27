@@ -6,7 +6,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import {OidcSecurityService} from 'angular-auth-oidc-client'
+
 import {AuthConfigModule} from "./auth/auth-config.module";
 
 

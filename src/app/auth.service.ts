@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { AuthConfigModule} from "./auth/auth-config.module";
+
+function _window(): any {
+  // return the global native browser window object
+  return window;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -7,9 +12,29 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 export class AuthService {
   modal: Window | null = null;
   private hasStorage: boolean;
-  constructor(public oidcSecurityService: OidcSecurityService) {
+  private loggedIn: boolean = false;
+  private instance: any = _window();
+  constructor(private authConfigModule: AuthConfigModule) {
     this.hasStorage = typeof Storage !== 'undefined';
+    this.instance.addEventListener('message', (event: { data: string; }) => {
+      if (event.data.match(/^oauth::/)) {
+        var data = JSON.parse(event.data.substring(7));
+        console.table(event.data);
+        console.table(data);
+        // Use data.code
+      }
+    });
+    this.instance.handleOpenURL = function(url: string | URL) {
+      console.log(">>>>>>>>>>>>>>>>>>>");
+      // do stuff, for example
+      // document.getElementById("url").value = url;
+      console.log(url);
+    };
   }
+  get cordova(): any {
+    return _window().cordova;
+  }
+
   public getRedirectUrl(): string {
     if (this.hasStorage) {
       return sessionStorage.getItem('redirectUrl') ?? '';
@@ -26,18 +51,18 @@ export class AuthService {
     sessionStorage.removeItem('redirectUrl');
   }
   get isLoggedIn() {
-    console.log('AuthService::isLoggedOn');
-    return this.oidcSecurityService.isAuthenticated$;
+    return this.loggedIn;
   }
 
   get token() {
     console.log('AuthService::token');
-    return this.oidcSecurityService.getAccessToken();
+    return '';
   }
 
   get userData$() {
     console.log('AuthService::userData$');
-    return this.oidcSecurityService.userData$;
+    return '';
+
   }
 
   checkAuth(url?: string) {
@@ -47,27 +72,19 @@ export class AuthService {
       this.modal.close();
     }
 
-    return this.oidcSecurityService.checkAuth(url);
+
   }
 
   doLogin() {
     console.log(`AuthService::doLogin`);
-    if(!this.oidcSecurityService.isAuthenticated()) {
-      console.log('*not* authenticated');
-      const urlHandler = (authUrl: string) => {
-        console.log('opening', authUrl);
-        this.modal = window.open(authUrl, '_blank');
-      };
-
-      this.oidcSecurityService.authorize(undefined, {urlHandler});
-    }
-    else{
-      console.log('***authenticated');
-    }
+    var endpoint = this.authConfigModule.formattedUrl();
+    console.log(endpoint);
+    // this.cordova.InAppBrowser.open(endpoint,'oauth:app-dci', 'location=no')
+    this.instance.open(endpoint, 'oauth:app-dci');
   }
 
   signOut() {
     console.log(`AuthService::signOut`);
-    return this.oidcSecurityService.logoffAndRevokeTokens();
+
   }
 }

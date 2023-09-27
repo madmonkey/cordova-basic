@@ -13,6 +13,15 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'silent-refresh',
+    loadChildren: () => import('./auth/silent-refresh/silent-refresh.module').then( m => m.SilentRefreshPageModule)
+  },
+  {
+    path: 'oidc-callback',
+    loadChildren: () => import('./auth/oidc-callback/oidc-callback.module').then( m => m.OidcCallbackPageModule)
+  },
+
 ];
 
 @NgModule({
